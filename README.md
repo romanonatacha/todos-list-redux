@@ -7,7 +7,7 @@ Exercise of Udacity React Nanodegree
 
 ## Demo
 
-https://romanonatacha.github.io/todos-list-redux.git
+https://romanonatacha.github.io/todos-list-redux
 
 ## Run the Application localy
 
