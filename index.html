@@ -6,11 +6,10 @@
   <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
   <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
   <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
-  <script src="https://tylermcginnis.com/goals-todos-api/index.js"></script>
-  <script src="https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js"></script>
+  <script src='https://tylermcginnis.com/goals-todos-api/index.js'></script>
+  <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
 </head>
 <body>
-
   <div id='app'></div>
 
   <script type='text/javascript'>
@@ -65,7 +64,7 @@
       return {
         type: RECEIVE_DATA,
         todos,
-        goals
+        goals,
       }
     }
 
@@ -73,11 +72,11 @@
       return (dispatch) => {
         dispatch(removeTodoAction(todo.id))
 
-      return API.deleteTodo(todo.id)
-        .catch(() => {
-          dispatch(addTodoAction(todo))
-          alert('An error occurred. Try again.')
-        })
+        return API.deleteTodo(todo.id)
+          .catch(() => {
+            dispatch(addTodoAction(todo))
+            alert('An error occurred. Try again.')
+          })
       }
     }
 
@@ -149,9 +148,8 @@
     const store = Redux.createStore(Redux.combineReducers({
       todos,
       goals,
-      loading
+      loading,
     }), Redux.applyMiddleware(ReduxThunk.default, checker, logger))
-
   </script>
 
   <script type='text/babel'>
@@ -162,12 +160,11 @@
             <li key={item.id}>
               <span
                 onClick={() => props.toggle && props.toggle(item.id)}
-                style={{textDecoration: item.complete ? 'line-through' : 'none'}}
-              >
-                {item.name}
+                style={{textDecoration: item.complete ? 'line-through' : 'none'}}>
+                  {item.name}
               </span>
               <button onClick={() => props.remove(item)}>
-                x
+                X
               </button>
             </li>
           ))}
@@ -188,11 +185,9 @@
             alert('There was an error. Try again.')
           })
       }
-
       removeItem = (todo) => {
-        this.props.stor.dispatch(handleDeleteTodo(todo))
+        this.props.store.dispatch(handleDeleteTodo(todo))
       }
-
       toggleItem = (id) => {
         this.props.store.dispatch(toggleTodoAction(id))
 
@@ -202,7 +197,6 @@
             alert('An error occurred. Try again.')
           })
       }
-
       render() {
         return (
           <div>
@@ -233,13 +227,10 @@
             this.props.store.dispatch(addGoalAction(goal))
             this.input.value = ''
           })
-          .catch(() => {
-            alert('There was an error. Try again.')
-          })
+          .catch(() => alert('There was an error. Try again.'))
       }
-
       removeItem = (goal) => {
-        this.props.store.dispatch(removeTodoAction(goal.id))
+        this.props.store.dispatch(removeGoalAction(goal.id))
 
         return API.deleteGoal(goal.id)
           .catch(() => {
@@ -247,7 +238,6 @@
             alert('An error occurred. Try again.')
           })
       }
-
       render() {
         return (
           <div>
@@ -269,7 +259,7 @@
     }
 
     class App extends React.Component {
-      componentDidMount() {
+      componentDidMount () {
         const { store } = this.props
 
         Promise.all([
@@ -281,19 +271,18 @@
 
         store.subscribe(() => this.forceUpdate())
       }
-      
       render() {
         const { store } = this.props
         const { todos, goals, loading } = store.getState()
 
         if (loading === true) {
-          return <h3>loading...</h3>
+          return <h3>Loading</h3>
         }
 
         return (
           <div>
-            <Todos todos={todos} store={store} />
-            <Goals goals={goals} store={store} />
+            <Todos todos={todos} store={this.props.store} />
+            <Goals goals={goals} store={this.props.store} />
           </div>
         )
       }
