@@ -81,18 +81,6 @@
       }
     }
 
-    function handleToggle (id) {
-      return (dispatch) => {
-        dispatch(toggleTodoAction(id))
-
-        return API.saveTodoToggle(id)
-        .catch(() => {
-          dispatch(toggleTodoAction(id))
-          alert('An error occurred. Try again.')
-        })
-      }
-    }
-
     function handleDeleteTodo (todo) {
       return (dispatch) => {
         dispatch(removeTodoAction(todo.id))
@@ -100,6 +88,18 @@
         return API.deleteTodo(todo.id)
           .catch(() => {
             dispatch(addTodoAction(todo))
+            alert('An error occurred. Try again.')
+          })
+      }
+    }
+
+    function handleToggle (id) {
+      return (dispatch) => {
+        dispatch(toggleTodoAction(id))
+
+        return API.saveTodoToggle(id)
+          .catch(() => {
+            dispatch(toggleTodoAction(id))
             alert('An error occurred. Try again.')
           })
       }
@@ -119,15 +119,16 @@
     function handleDeleteGoal (goal) {
       return (dispatch) => {
         dispatch(removeGoalAction(goal.id))
+
         return API.deleteGoal(goal.id)
-        .catch(() => {
-          dispatch(addGoalAction(goal))
-          alert('An error occurred. Try again.')
-        })
+          .catch(() => {
+            dispatch(addGoalAction(goal))
+            alert('An error occurred. Try again.')
+          })
       }
     }
 
-    function handeInitialData () {
+    function handleInitialData () {
       return (dispatch) => {
         return Promise.all([
           API.fetchTodos(),
@@ -234,7 +235,7 @@
       addItem = (e) => {
         e.preventDefault()
 
-        this.props.store.dispatch(handleAddTodo(
+        this.props.dispatch(handleAddTodo(
           this.input.value,
           () => this.input.value = ''
         ))
@@ -266,10 +267,23 @@
       }
     }
 
+    class ConnectedTodos extends React.Component {
+      render() {
+        return (
+          <Context.Consumer>
+            {(store) => {
+              const { todos } = store.getState()
+
+              return <Todos todos={todos} dispatch={store.dispatch} />
+            }}
+          </Context.Consumer>
+        )
+      }
+    }
+
     class Goals extends React.Component {
       addItem = (e) => {
         e.preventDefault()
-
         this.props.dispatch(handleAddGoal(
           this.input.value,
           () => this.input.value = ''
@@ -298,27 +312,13 @@
       }
     }
 
-    class ConnectedTodos extends React.Component {
-      render() {
-        return (
-          <Context.Consumer>
-            {(store) => {
-              const { todos } = store.getState()
-              
-              return <Todos todos={todos} dispatch={store.dispatch} />
-            }}
-          </Context.Consumer>
-        )
-      }
-    }
-
     class ConnectedGoals extends React.Component {
       render() {
         return (
           <Context.Consumer>
             {(store) => {
               const { goals } = store.getState()
-              
+
               return <Goals goals={goals} dispatch={store.dispatch} />
             }}
           </Context.Consumer>
@@ -330,7 +330,7 @@
       componentDidMount () {
         const { store } = this.props
 
-        store.dispatch(handeInitialData())
+        store.dispatch(handleInitialData())
 
         store.subscribe(() => this.forceUpdate())
       }
@@ -355,9 +355,9 @@
       render() {
         return (
           <Context.Consumer>
-            {(store) => {
+            {(store) => (
               <App store={store} />
-            }}
+            )}
           </Context.Consumer>
         )
       }
